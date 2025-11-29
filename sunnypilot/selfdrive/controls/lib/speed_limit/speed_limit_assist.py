@@ -44,6 +44,7 @@ V_CRUISE_UNSET = 255.0
 CRUISE_BUTTONS_PLUS = (ButtonType.accelCruise, ButtonType.resumeCruise)
 CRUISE_BUTTONS_MINUS = (ButtonType.decelCruise, ButtonType.setCruise)
 CRUISE_BUTTON_CONFIRM_HOLD = 0.5  # secs.
+JOEL_LOG_PATH = '/joellogs/joel_out.txt'
 
 
 class SpeedLimitAssist:
@@ -153,11 +154,11 @@ class SpeedLimitAssist:
     for b in CS.buttonEvents:
       if not b.pressed:
         if b.type in CRUISE_BUTTONS_PLUS:
-          with open('joel_out.txt', 'a+') as f:
+          with open(JOEL_LOG_PATH, 'a+') as f:
             f.write("CRUISE_BUTTON_PLUS, ")
           self._plus_hold = max(self._plus_hold, now + CRUISE_BUTTON_CONFIRM_HOLD)
         elif b.type in CRUISE_BUTTONS_MINUS:
-          with open('joel_out.txt', 'a+') as f:
+          with open(JOEL_LOG_PATH, 'a+') as f:
             f.write("CRUISE_BUTTON_MINUS, ")
           self._minus_hold = max(self._minus_hold, now + CRUISE_BUTTON_CONFIRM_HOLD)
 
@@ -409,7 +410,7 @@ class SpeedLimitAssist:
 
     # IDEA: If the speed limit change is 5 or 1, it was from the user, otherwise from the system and can be ignored.
 
-    with open('/joellogs/joel_out.txt', 'a+') as f:
+    with open(JOEL_LOG_PATH, 'a+') as f:
       f.write(
         f"frame: {self.frame}, _speed_limit: {self._speed_limit}, v_cruise_cluster: {self.v_cruise_cluster}, v_cruise_cluster_conv: {self.v_cruise_cluster_conv}, speed_limit_final_last_conv: {self.speed_limit_final_last_conv}\n"
       )
