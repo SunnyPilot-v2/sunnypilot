@@ -19,7 +19,7 @@ from openpilot.sunnypilot.models.helpers import get_active_bundle
 
 DecState = custom.LongitudinalPlanSP.DynamicExperimentalControl.DynamicExperimentalControlState
 LongitudinalPlanSource = custom.LongitudinalPlanSP.LongitudinalPlanSource
-
+SpeedLimitAssistState = custom.LongitudinalPlanSP.SpeedLimit.AssistState
 
 class LongitudinalPlannerSP:
   def __init__(self, CP: structs.CarParams, CP_SP: structs.CarParamsSP, mpc):
@@ -55,9 +55,6 @@ class LongitudinalPlannerSP:
     long_enabled = sm['carControl'].enabled
     long_override = sm['carControl'].cruiseControl.override
 
-    # Smart Cruise Control
-    self.scc.update(sm, long_enabled, long_override, v_ego, a_ego, v_cruise)
-
     # Speed Limit Resolver
     self.resolver.update(v_ego, sm)
 
@@ -66,8 +63,15 @@ class LongitudinalPlannerSP:
     self.sla.update(long_enabled, long_override, v_ego, a_ego, v_cruise_cluster, self.resolver.speed_limit,
                     self.resolver.speed_limit_final_last, has_speed_limit, self.resolver.distance, self.events_sp)
 
+    v_cruise_actual = v_cruise_cluster
+    if (long_enabled and has_speed_limit and self.sla.long_enabled and self.sla.enabled and self.sla.state != SpeedLimitAssistState.disabled and self.sla.state != SpeedLimitAssistState.inactive):
+      v_cruise_actual = self.sla.output_v_target
+
+    # Smart Cruise Control
+    self.scc.update(sm, long_enabled, long_override, v_ego, a_ego, v_cruise_actual)
+
     targets = {
-      LongitudinalPlanSource.cruise: (v_cruise, a_ego),
+      LongitudinalPlanSource.cruise: (v_cruise_actual, a_ego),
       LongitudinalPlanSource.sccVision: (self.scc.vision.output_v_target, self.scc.vision.output_a_target),
       LongitudinalPlanSource.sccMap: (self.scc.map.output_v_target, self.scc.map.output_a_target),
       LongitudinalPlanSource.speedLimitAssist: (self.sla.output_v_target, self.sla.output_a_target),

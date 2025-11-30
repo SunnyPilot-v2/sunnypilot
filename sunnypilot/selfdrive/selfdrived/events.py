@@ -36,8 +36,8 @@ def speed_limit_adjust_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.
 
 def speed_limit_pre_active_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubMaster, metric: bool, soft_disable_time: int, personality) -> Alert:
   speed_conv = CV.MS_TO_KPH if metric else CV.MS_TO_MPH
-  speed_limit_final_last = sm['longitudinalPlanSP'].speedLimit.resolver.speedLimitFinalLast
-  speed_limit_final_last_conv = round(speed_limit_final_last * speed_conv)
+  speed_limit = sm['longitudinalPlanSP'].speedLimit.resolver.speedLimit
+  speed_limit_conv = round(speed_limit * speed_conv)
   alert_1_str = ""
   alert_2_str = ""
   alert_size = AlertSize.none
@@ -47,7 +47,7 @@ def speed_limit_pre_active_alert(CP: car.CarParams, CS: car.CarState, sm: messag
     speed_unit = "km/h" if metric else "mph"
 
     alert_1_str = "Speed Limit Assist: Waiting for reactivation"
-    alert_2_str = f"Manually change set speed to {speed_limit_final_last_conv} {speed_unit} to reactivate"
+    alert_2_str = f"Manually change set speed to {speed_limit_conv} {speed_unit} to reactivate"
     alert_size = AlertSize.mid
 
   return Alert(alert_1_str, alert_2_str, AlertStatus.normal, alert_size, Priority.LOW, VisualAlert.none, AudibleAlertSP.promptSingleLow, 0.1)
