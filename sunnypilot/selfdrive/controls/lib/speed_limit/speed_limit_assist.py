@@ -192,7 +192,7 @@ class SpeedLimitAssist:
 
     if self.long_enabled and self.enabled:
       delta = abs(self.v_cruise_cluster_conv - self.prev_v_cruise_cluster_conv)
-      if delta in (1, 5):
+      if delta in (1, 5) or (delta <= 5 and self.v_cruise_cluster_conv % 5 == 0):
         self.user_overridden = True
 
       if self.user_overridden and self.v_cruise_cluster_conv == self._speed_limit * CV.MS_TO_KPH:
