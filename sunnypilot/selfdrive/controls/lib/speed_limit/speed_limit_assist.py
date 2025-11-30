@@ -45,7 +45,7 @@ CRUISE_BUTTONS_PLUS = (ButtonType.accelCruise, ButtonType.resumeCruise)
 CRUISE_BUTTONS_MINUS = (ButtonType.decelCruise, ButtonType.setCruise)
 CRUISE_BUTTON_CONFIRM_HOLD = 0.5  # secs.
 
-JOEL_LOG_PATH = '/joellogs/joel_out.txt'
+JOEL_LOG_PATH = '/data/joellogs/joel_out.txt'
 
 
 class SpeedLimitAssist:
