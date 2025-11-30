@@ -63,7 +63,7 @@ class LongitudinalPlannerSP:
     self.sla.update(long_enabled, long_override, v_ego, a_ego, v_cruise_cluster, self.resolver.speed_limit,
                     self.resolver.speed_limit_final_last, has_speed_limit, self.resolver.distance, self.events_sp)
 
-    v_cruise_actual = v_cruise_cluster
+    v_cruise_actual = v_cruise
     if (long_enabled and has_speed_limit and self.sla.long_enabled and self.sla.enabled and self.sla.state != SpeedLimitAssistState.disabled and self.sla.state != SpeedLimitAssistState.inactive):
       v_cruise_actual = self.sla.output_v_target
 
