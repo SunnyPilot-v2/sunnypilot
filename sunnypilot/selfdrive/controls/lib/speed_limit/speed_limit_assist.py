@@ -352,10 +352,7 @@ class SpeedLimitAssist:
     return enabled, active
 
   def update_events(self, events_sp: EventsSP) -> None:
-    if self.user_overridden:
-      events_sp.add(EventNameSP.speedLimitPreActive)
-
-    if self.state == SpeedLimitAssistState.preActive:
+    if self.user_overridden or self.state == SpeedLimitAssistState.preActive:
       events_sp.add(EventNameSP.speedLimitPreActive)
 
     if self.state == SpeedLimitAssistState.pending and self._state_prev != SpeedLimitAssistState.pending:
