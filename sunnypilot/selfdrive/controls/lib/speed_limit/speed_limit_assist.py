@@ -130,7 +130,7 @@ class SpeedLimitAssist:
       events_sp.add(EventNameSP.speedLimitActive)
 
   def get_v_target_from_control(self) -> float:
-    if self._has_speed_limit and not self.user_overridden:
+    if self._has_speed_limit:
       if self.pcm_op_long and self.is_enabled:
         return self._speed_limit_final_last
       if not self.pcm_op_long and self.is_active:
@@ -194,9 +194,15 @@ class SpeedLimitAssist:
       delta = abs(self.v_cruise_cluster_conv - self.prev_v_cruise_cluster_conv)
       if delta in (1, 5) or (delta <= 5 and self.v_cruise_cluster_conv % 5 == 0):
         self.user_overridden = True
+        self.state = SpeedLimitAssistState.pending
+
+      if (self.user_overridden):
+        with open('/data/joellogs/difference.txt', 'a+') as f:
+          f.write("USER_OVERRIDE, waiting for cluster (" + str(self.v_cruise_cluster_conv) + ") = limit (" + str(self._speed_limit * CV.MS_TO_KPH) + ")\n")
 
       if self.user_overridden and self.v_cruise_cluster_conv == self._speed_limit * CV.MS_TO_KPH:
         self.user_overridden = False
+        self.state = SpeedLimitAssistState.adapting
     else:
       self.user_overridden = False
 
@@ -231,7 +237,7 @@ class SpeedLimitAssist:
 
   def _update_confirmed_state(self):
     if self._has_speed_limit:
-      if self.v_offset < LIMIT_SPEED_OFFSET_TH:
+      if self.v_offset < LIMIT_SPEED_OFFSET_TH or self.v_offset > -LIMIT_SPEED_OFFSET_TH:
         self.state = SpeedLimitAssistState.adapting
       else:
         self.state = SpeedLimitAssistState.active
@@ -261,12 +267,12 @@ class SpeedLimitAssist:
       else:
         # ACTIVE
         if self.state == SpeedLimitAssistState.active:
-          if self._has_speed_limit and self.v_offset < LIMIT_SPEED_OFFSET_TH:
+          if self._has_speed_limit and self.v_offset < LIMIT_SPEED_OFFSET_TH or self.v_offset > -LIMIT_SPEED_OFFSET_TH:
             self.state = SpeedLimitAssistState.adapting
 
         # ADAPTING
         elif self.state == SpeedLimitAssistState.adapting:
-          if self.v_offset >= LIMIT_SPEED_OFFSET_TH:
+          if self.v_offset >= LIMIT_SPEED_OFFSET_TH and self.v_offset <= -LIMIT_SPEED_OFFSET_TH:
             self.state = SpeedLimitAssistState.active
 
         # PENDING
@@ -394,8 +400,6 @@ class SpeedLimitAssist:
 
     self.update_params()
     self.update_calculations(v_cruise_cluster)
-
-    # IDEA: If the speed limit change is 5 or 1, it was from the user, otherwise from the system and can be ignored.
 
     with open(JOEL_LOG_PATH, 'a+') as f:
       f.write(
