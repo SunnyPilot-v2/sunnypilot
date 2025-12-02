@@ -192,7 +192,7 @@ class SpeedLimitAssist:
 
     if self.long_enabled and self.enabled:
       delta = abs(self.v_cruise_cluster_conv - self.prev_v_cruise_cluster_conv)
-      if delta in (1, 5) or (delta <= 5 and self.v_cruise_cluster_conv % 5 == 0):
+      if delta in (1, 5) or (0.5 <= delta <= 5 and self.v_cruise_cluster_conv % 5 == 0):
         self.user_overridden = True
         self.state = SpeedLimitAssistState.pending
 
@@ -295,7 +295,7 @@ class SpeedLimitAssist:
     elif self.state == SpeedLimitAssistState.disabled:
       if self.long_enabled and self.enabled:
         if self._has_speed_limit:
-          if self.v_offset < LIMIT_SPEED_OFFSET_TH:
+          if self.v_offset < LIMIT_SPEED_OFFSET_TH or self.v_offset > -LIMIT_SPEED_OFFSET_TH:
             self.state = SpeedLimitAssistState.adapting
           else:
             self.state = SpeedLimitAssistState.active
