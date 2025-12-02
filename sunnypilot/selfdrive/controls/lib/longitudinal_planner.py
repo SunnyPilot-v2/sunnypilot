@@ -80,13 +80,12 @@ class LongitudinalPlannerSP:
     if use_sla:
       targets[LongitudinalPlanSource.speedLimitAssist] = (self.sla.output_v_target, self.sla.output_a_target)
 
-
     self.source = min(targets, key=lambda k: targets[k][0])
     self.output_v_target, self.output_a_target = targets[self.source]
 
     with open('/data/joellogs/long_out.txt', 'a+') as f:
       f.write(
-        f"source: {self.source}, output_v_target: {self.output_v_target}, output_a_target: {self.output_a_target}, v_cruise_cluster: {v_cruise_cluster}, v_cruise: {v_cruise}, v_cruise_actual: {v_cruise_actual}, sla.output_v_target: {self.sla.output_v_target}\n"
+        f"state: {self.sla.state}, source: {self.source}, output_v_target: {self.output_v_target}, output_a_target: {self.output_a_target}, v_cruise_cluster: {v_cruise_cluster}, v_cruise: {v_cruise}, v_cruise_actual: {v_cruise_actual}, sla.output_v_target: {self.sla.output_v_target}\n"
       )
 
     return self.output_v_target, self.output_a_target
