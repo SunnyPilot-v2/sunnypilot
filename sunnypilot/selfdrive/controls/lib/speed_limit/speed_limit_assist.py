@@ -196,11 +196,7 @@ class SpeedLimitAssist:
         self.user_overridden = True
         self.state = SpeedLimitAssistState.pending
 
-      if (self.user_overridden):
-        with open('/data/joellogs/difference.txt', 'a+') as f:
-          f.write("USER_OVERRIDE, waiting for cluster (" + str(self.v_cruise_cluster_conv) + ") = limit (" + str(self._speed_limit * CV.MS_TO_KPH) + ")\n")
-
-      if self.user_overridden and self.v_cruise_cluster_conv == self._speed_limit * CV.MS_TO_KPH:
+      if self.user_overridden and round(self.v_cruise_cluster_conv) == round(self._speed_limit * CV.MS_TO_KPH):
         self.user_overridden = False
         self.state = SpeedLimitAssistState.adapting
     else:
