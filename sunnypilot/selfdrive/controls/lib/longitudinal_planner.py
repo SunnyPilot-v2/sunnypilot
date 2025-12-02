@@ -64,7 +64,7 @@ class LongitudinalPlannerSP:
                     self.resolver.speed_limit_final_last, has_speed_limit, self.resolver.distance, self.events_sp)
 
     v_cruise_actual = v_cruise
-    if (long_enabled and has_speed_limit and self.sla.long_enabled and self.sla.enabled and self.sla.state != SpeedLimitAssistState.disabled and self.sla.state != SpeedLimitAssistState.inactive and self.sla.state != SpeedLimitAssistState.pending and self.sla.output_v_target != 255.0):
+    if (long_enabled and has_speed_limit and self.sla.long_enabled and self.sla.enabled and self.sla.state != SpeedLimitAssistState.disabled and self.sla.state != SpeedLimitAssistState.inactive and self.sla.state != SpeedLimitAssistState.pending and self.sla.state != SpeedLimitAssistState.preActive and self.sla.output_v_target != 255.0):
       v_cruise_actual = self.sla.output_v_target
 
     # Smart Cruise Control
