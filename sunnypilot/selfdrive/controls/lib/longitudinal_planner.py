@@ -76,16 +76,16 @@ class LongitudinalPlannerSP:
       LongitudinalPlanSource.sccMap: (self.scc.map.output_v_target, self.scc.map.output_a_target),
       LongitudinalPlanSource.speedLimitAssist: (self.sla.output_v_target, self.sla.output_a_target),
     }
-    
+
 
     self.source = min(targets, key=lambda k: targets[k][0])
     self.output_v_target, self.output_a_target = targets[self.source]
-    
+
     with open('/data/joellogs/long_out.txt', 'a+') as f:
       f.write(
-        f"source: {self.source}, output_v_target: {self.output_v_target}, output_a_target: {self.output_a_target}, v_cruise_cluster: {self.v_cruise_cluster}, v_cruise: {v_cruise}, v_cruise_actual: {v_cruise_actual}, sla.output_v_target: {self.sla.output_v_target}\n"
+        f"source: {self.source}, output_v_target: {self.output_v_target}, output_a_target: {self.output_a_target}, v_cruise_cluster: {v_cruise_cluster}, v_cruise: {v_cruise}, v_cruise_actual: {v_cruise_actual}, sla.output_v_target: {self.sla.output_v_target}\n"
       )
-      
+
     return self.output_v_target, self.output_a_target
 
   def update(self, sm: messaging.SubMaster) -> None:
