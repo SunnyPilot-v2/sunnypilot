@@ -64,7 +64,8 @@ class LongitudinalPlannerSP:
                     self.resolver.speed_limit_final_last, has_speed_limit, self.resolver.distance, self.events_sp)
 
     v_cruise_actual = v_cruise
-    if (long_enabled and has_speed_limit and self.sla.long_enabled and self.sla.enabled and self.sla.state != SpeedLimitAssistState.disabled and self.sla.state != SpeedLimitAssistState.inactive and self.sla.state != SpeedLimitAssistState.pending and self.sla.state != SpeedLimitAssistState.preActive and self.sla.output_v_target != 255.0):
+    use_sla = long_enabled and has_speed_limit and self.sla.long_enabled and self.sla.enabled and self.sla.state != SpeedLimitAssistState.disabled and self.sla.state != SpeedLimitAssistState.inactive and self.sla.state != SpeedLimitAssistState.pending and self.sla.state != SpeedLimitAssistState.preActive and self.sla.output_v_target != 255.0
+    if(use_sla):
       v_cruise_actual = self.sla.output_v_target
 
     # Smart Cruise Control
@@ -74,8 +75,11 @@ class LongitudinalPlannerSP:
       LongitudinalPlanSource.cruise: (v_cruise_actual, a_ego),
       LongitudinalPlanSource.sccVision: (self.scc.vision.output_v_target, self.scc.vision.output_a_target),
       LongitudinalPlanSource.sccMap: (self.scc.map.output_v_target, self.scc.map.output_a_target),
-      LongitudinalPlanSource.speedLimitAssist: (self.sla.output_v_target, self.sla.output_a_target),
     }
+
+    if use_sla:
+      targets[LongitudinalPlanSource.speedLimitAssist] = (self.sla.output_v_target, self.sla.output_a_target)
+
 
     self.source = min(targets, key=lambda k: targets[k][0])
     self.output_v_target, self.output_a_target = targets[self.source]
