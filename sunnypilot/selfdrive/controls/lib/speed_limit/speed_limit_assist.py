@@ -35,8 +35,8 @@ PRE_ACTIVE_GUARD_PERIOD = {
 }
 SPEED_LIMIT_CHANGED_HOLD_PERIOD = 1  # secs. Time to wait after speed limit change before switching to preActive.
 
-LIMIT_MIN_ACC = -1.5  # m/s^2 Maximum deceleration allowed for limit controllers to provide.
-LIMIT_MAX_ACC = 1.0  # m/s^2 Maximum acceleration allowed for limit controllers to provide while active.
+LIMIT_MIN_ACC = -2.0  # m/s^2 Maximum deceleration allowed for limit controllers to provide.
+LIMIT_MAX_ACC = 1.5  # m/s^2 Maximum acceleration allowed for limit controllers to provide while active.
 LIMIT_MIN_SPEED = 8.33  # m/s, Minimum speed limit to provide as solution on limit controllers.
 LIMIT_SPEED_OFFSET_TH = -1.0  # m/s Maximum offset between speed limit and current speed for adapting state.
 V_CRUISE_UNSET = 255.0
@@ -141,7 +141,7 @@ class SpeedLimitAssist:
 
   # TODO-SP: SLA's own output_a_target for planner
   def get_a_target_from_control(self) -> float:
-    return self.a_ego
+    return self.acceleration_solutions[self.state]()
 
   def update_params(self) -> None:
     if self.frame % int(PARAMS_UPDATE_PERIOD / DT_MDL) == 0:
@@ -226,7 +226,7 @@ class SpeedLimitAssist:
     if self._distance > 0:
       return (self._speed_limit_final_last**2 - self.v_ego**2) / (2.0 * self._distance)
 
-    return self.v_offset / float(ModelConstants.T_IDXS[CONTROL_N])
+    return self.get_active_state_target_acceleration()
 
   def get_active_state_target_acceleration(self) -> float:
     return self.v_offset / float(ModelConstants.T_IDXS[CONTROL_N])
